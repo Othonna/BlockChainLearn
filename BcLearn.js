@@ -3,15 +3,15 @@ const SHA256 = require('crypto-js/sha256');
 class Block {
     constructor(index, timestamp, data, previousHash = '') {
         this.index = index;
+        this.previousHash = previousHash;
         this.timestamp = timestamp;
         this.data = data;
-        this.previousHash = previousHash;
         this.hash = this.calculateHash();
         this.nonce = 0;
     }
    
     calculateHash(){
-        return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data)).toString();
+        return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data) + this.nonce).toString();
     }
     
     mineBlock(difficulty) {
@@ -19,7 +19,7 @@ class Block {
             this.nonce++;
             this.hash = this.calculateHash();
         }
-        console/log("Block moned: " + this.hash);
+        console.log("Block mined: " + this.hash);
     }
 }
 
@@ -27,6 +27,7 @@ class Block {
 class Blockchain {
     constructor() {
         this.chain = [this.createGenesisBlock()];
+        this.difficulty = 4;
     }
 
     createGenesisBlock() {
@@ -39,7 +40,7 @@ class Blockchain {
 
     addBlock(newBlock) {
        newBlock.previousHash = this.getLastedBlock().hash;
-       newBlock.mineBlock();
+       newBlock.mineBlock(this.difficulty);
        this.chain.push(newBlock);
     }    
 
@@ -62,12 +63,10 @@ class Blockchain {
 }
 
 let OthonnaCoin = new Blockchain();
+
+console.log('Mining block 1... ')
 OthonnaCoin.addBlock(new Block(1, "20/08/2021", { amount: 4}));
+
+console.log('Mining block 2... ')
 OthonnaCoin.addBlock(new Block(2, "27/08/2021", { amount: 10}));
 
-//console.log(JSON.stringify(OthonnaCoin, null, 4));
-//console.log('Is blockchain valid ? ' + OthonnaCoin.isChainValid());
-
-//OthonnaCoin.chain[1].data = { amount: 100};
-
-//console.log('Is blockchain valid ? ' + OthonnaCoin.isChainValid());
